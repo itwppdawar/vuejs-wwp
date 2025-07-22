@@ -1,30 +1,3 @@
-<template>
-  <div>
-    <div v-if="!isLoggedIn">
-      <h2>Register</h2>
-      <form @submit.prevent="handleRegister">
-        <input 
-          v-model="regEmail" 
-          type="email" 
-          placeholder="Email" 
-          required 
-        />
-        <input 
-          v-model="regPassword" 
-          type="password" 
-          placeholder="Password" 
-          required 
-        />
-        <button type="submit">Register</button>
-      </form>
-     <div v-if="message" class="message">
-      {{ message }}
-    </div>
-    <router-link to="/">Go to SignIn</router-link>
-    </div>
-  </div>
-</template>
-
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
@@ -67,3 +40,32 @@ export default {
   border-radius: 4px;
 }
 </style>
+
+<template>
+  <div>
+    <div v-if="!isLoggedIn">
+      <h2>Register</h2>
+      <form @submit.prevent="handleRegister">
+        <input 
+          v-model="regEmail" 
+          type="email" 
+          placeholder="Email" 
+          required 
+        />
+        <input 
+          v-model="regPassword" 
+          type="password" 
+          placeholder="Password" 
+          required 
+        />
+        <button type="submit">Register</button>
+      </form>
+     <div v-if="message" class="message">
+      {{ message }}
+    </div>
+    <router-link to="/">Go to Register</router-link>
+    </div>
+  </div>
+</template>
+
+

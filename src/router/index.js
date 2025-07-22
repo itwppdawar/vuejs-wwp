@@ -12,12 +12,12 @@ const routes = [
     },
     {
         path: '/register',
-        name: '',
+        name: 'Register',
         component: Register
     },
     {
         path: '/beranda',
-        name: '',
+        name: 'Beranda',
         component: Beranda
     },
     

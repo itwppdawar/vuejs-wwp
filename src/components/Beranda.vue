@@ -1,3 +1,20 @@
+<script>
+import { mapGetters, mapActions } from 'vuex';
+
+export default {
+  name: 'AuthExample',
+  computed: {
+    ...mapGetters(['isLoggedIn', 'currentUser', 'message'])
+  },
+  methods: {
+    ...mapActions(['logout']),
+    handleLogout() {
+      this.logout();
+    }
+  }
+};
+</script>
+
 <template>
     <div>
       <div v-if="!isLoggedIn">
@@ -6,3 +23,4 @@
       </div>
     </div>
 </template>
+

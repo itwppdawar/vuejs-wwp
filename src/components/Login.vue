@@ -1,29 +1,3 @@
-<template>
-  <div>
-    <div v-if="!isLoggedIn">
-      <h2>Login</h2>
-      <form @submit.prevent="handleLogin">
-        <input 
-          v-model="email" 
-          type="email" 
-          placeholder="Email" 
-          required 
-        />
-        <input 
-          v-model="password" 
-          type="password" 
-          placeholder="Password" 
-          required 
-        />
-        <button type="submit">Login</button>
-      </form>
-    <div v-if="message" class="message">
-      {{ message }}
-    </div>
-    <router-link to="/signup">Go to SignUp</router-link>
-  </div>
-  </div>
-</template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
@@ -55,21 +29,6 @@ export default {
         console.error('Login failed:', error);
       }
     },
-    async handleRegister() {
-      try {
-        await this.register({ 
-          email: this.regEmail, 
-          password: this.regPassword 
-        });
-        this.regEmail = '';
-        this.regPassword = '';
-      } catch (error) {
-        console.error('Registration failed:', error);
-      }
-    },
-    handleLogout() {
-      this.logout();
-    }
   }
 };
 </script>
@@ -82,3 +41,30 @@ export default {
   border-radius: 4px;
 }
 </style>
+
+<template>
+  <div>
+    <div v-if="!isLoggedIn">
+      <h2>Login</h2>
+      <form @submit.prevent="handleLogin">
+        <input 
+          v-model="email" 
+          type="email" 
+          placeholder="Email" 
+          required 
+        />
+        <input 
+          v-model="password" 
+          type="password" 
+          placeholder="Password" 
+          required 
+        />
+        <button type="submit">Login</button>
+      </form>
+    <div v-if="message" class="message">
+      {{ message }}
+    </div>
+    <router-link to="/signup">Go to SignUp</router-link>
+  </div>
+  </div>
+</template>
