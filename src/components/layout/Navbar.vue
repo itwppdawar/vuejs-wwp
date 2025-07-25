@@ -7,7 +7,7 @@
     <div class="navbar-collapse collapse">
       <ul class="navbar-nav navbar-align">
         <li class="nav-item dropdown">
-          <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
             <div class="position-relative">
               <i class="align-middle" data-feather="bell"></i>
               <span class="indicator">4</span>
@@ -25,8 +25,43 @@
                   </div>
                   <div class="col-10">
                     <div class="text-dark">Update completed</div>
-                    <div class="text-muted small mt-1">Restart server to complete the update.</div>
+                    <div class="text-muted small mt-1">Restart server 12 to complete the update.</div>
                     <div class="text-muted small mt-1">30m ago</div>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="list-group-item">
+                <div class="row g-0 align-items-center">
+                  <div class="col-2">
+                    <i class="text-warning" data-feather="bell"></i>
+                  </div>
+                  <div class="col-10">
+                    <div class="text-dark">Lorem ipsum</div>
+                    <div class="text-muted small mt-1">Aliquam ex eros, imperdiet vulputate hendrerit et.</div>
+                    <div class="text-muted small mt-1">2h ago</div>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="list-group-item">
+                <div class="row g-0 align-items-center">
+                  <div class="col-2">
+                    <i class="text-primary" data-feather="home"></i>
+                  </div>
+                  <div class="col-10">
+                    <div class="text-dark">Login from 192.186.1.8</div>
+                    <div class="text-muted small mt-1">5h ago</div>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="list-group-item">
+                <div class="row g-0 align-items-center">
+                  <div class="col-2">
+                    <i class="text-success" data-feather="user-plus"></i>
+                  </div>
+                  <div class="col-10">
+                    <div class="text-dark">New connection</div>
+                    <div class="text-muted small mt-1">Christina accepted your request.</div>
+                    <div class="text-muted small mt-1">14h ago</div>
                   </div>
                 </div>
               </a>
@@ -38,7 +73,7 @@
         </li>
 
         <li class="nav-item dropdown">
-          <a class="nav-icon dropdown-toggle" href="#" id="messagesDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-icon dropdown-toggle" href="#" id="messagesDropdown" data-bs-toggle="dropdown">
             <div class="position-relative">
               <i class="align-middle" data-feather="message-square"></i>
             </div>
@@ -53,12 +88,48 @@
               <a href="#" class="list-group-item">
                 <div class="row g-0 align-items-center">
                   <div class="col-2">
-                    <div class="avatar bg-primary text-white rounded-circle">VT</div>
+                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">VT</div>
                   </div>
                   <div class="col-10 ps-2">
                     <div class="text-dark">Vanessa Tucker</div>
                     <div class="text-muted small mt-1">Nam pretium turpis et arcu. Duis arcu tortor.</div>
                     <div class="text-muted small mt-1">15m ago</div>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="list-group-item">
+                <div class="row g-0 align-items-center">
+                  <div class="col-2">
+                    <div class="avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center">WH</div>
+                  </div>
+                  <div class="col-10 ps-2">
+                    <div class="text-dark">William Harris</div>
+                    <div class="text-muted small mt-1">Curabitur ligula sapien euismod vitae.</div>
+                    <div class="text-muted small mt-1">2h ago</div>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="list-group-item">
+                <div class="row g-0 align-items-center">
+                  <div class="col-2">
+                    <div class="avatar bg-warning text-white rounded-circle d-flex align-items-center justify-content-center">CM</div>
+                  </div>
+                  <div class="col-10 ps-2">
+                    <div class="text-dark">Christina Mason</div>
+                    <div class="text-muted small mt-1">Pellentesque auctor neque nec urna.</div>
+                    <div class="text-muted small mt-1">4h ago</div>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="list-group-item">
+                <div class="row g-0 align-items-center">
+                  <div class="col-2">
+                    <div class="avatar bg-danger text-white rounded-circle d-flex align-items-center justify-content-center">SL</div>
+                  </div>
+                  <div class="col-10 ps-2">
+                    <div class="text-dark">Sharon Lessman</div>
+                    <div class="text-muted small mt-1">Aenean tellus metus, bibendum sed, posuere ac, mattis non.</div>
+                    <div class="text-muted small mt-1">5h ago</div>
                   </div>
                 </div>
               </a>
@@ -73,10 +144,11 @@
           <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
             <i class="align-middle" data-feather="settings"></i>
           </a>
-
+          <a class="nav-link d-none d-sm-inline-block">
+              <div class="avatar bg-primary text-white avatar img-fluid rounded me-1 d-flex align-items-center justify-content-center">{{ getUserInitials() }}</div>
+          </a>
           <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-            <div class="avatar bg-primary text-white rounded-circle me-2">CH</div>
-            <span class="text-dark">{{ currentUser?.name || currentUser?.email || 'User' }}</span>
+            <span class="text-dark">{{ currentUser?.name || currentUser?.email || 'username' }}</span>
           </a>
           <div class="dropdown-menu dropdown-menu-end">
             <a class="dropdown-item" href="#"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
@@ -101,106 +173,28 @@ export default {
   computed: {
     ...mapGetters(['currentUser'])
   },
+  mounted() {
+    // Initialize feather icons
+    if (window.feather) {
+      window.feather.replace();
+    }
+  },
   methods: {
     ...mapActions(['logout']),
     handleLogout() {
       this.logout();
       this.$router.push({ name: 'Login' });
+    },
+    getUserInitials() {
+      const user = this.currentUser;
+      if (user?.name) {
+        return user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+      } else if (user?.email) {
+        return user.email.substring(0, 2).toUpperCase();
+      }
+      return 'CH';
     }
   }
 };
 </script>
 
-<style scoped>
-.navbar-bg {
-  background-color: #fff;
-  border-bottom: 1px solid #e3e6f0;
-  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 250px;
-  z-index: 99;
-  height: 60px;
-  transition: all 0.3s;
-}
-
-.sidebar-toggle {
-  color: #5a6c7d;
-  background: none;
-  border: 0;
-  font-size: 1.25rem;
-  cursor: pointer;
-  margin-right: 1rem;
-}
-
-.sidebar-toggle:hover {
-  color: #495057;
-}
-
-.hamburger {
-  width: 18px;
-  height: 18px;
-}
-
-.navbar-nav {
-  margin-left: auto;
-}
-
-.nav-icon {
-  position: relative;
-  color: #5a6c7d;
-  padding: 0.5rem 0.75rem;
-  font-size: 1.25rem;
-  text-decoration: none;
-}
-
-.nav-icon:hover {
-  color: #495057;
-}
-
-.indicator {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  width: 0.5rem;
-  height: 0.5rem;
-  background: #dc3545;
-  border-radius: 50%;
-  font-size: 0.6rem;
-  color: #fff;
-  text-align: center;
-  line-height: 0.5rem;
-}
-
-.avatar {
-  width: 2rem;
-  height: 2rem;
-}
-
-.dropdown-menu-header {
-  padding: 0.75rem 1.5rem;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e3e6f0;
-  font-weight: 600;
-  color: #5a6c7d;
-}
-
-.dropdown-menu-footer {
-  padding: 0.75rem 1.5rem;
-  background: #f8f9fa;
-  border-top: 1px solid #e3e6f0;
-  text-align: center;
-}
-
-.dropdown-menu-lg {
-  min-width: 20rem;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .navbar-bg {
-    left: 0;
-  }
-}
-</style>

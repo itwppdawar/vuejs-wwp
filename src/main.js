@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import './assets/js/app'
 
 import * as BootstrapVueNext from 'bootstrap-vue-next'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -13,7 +14,7 @@ import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 
 // Import AdminKit styles
-import './style/adminkit.css'
+import './assets/css/app.css'
 
 /* import the fontawesome core */
 import {library} from '@fortawesome/fontawesome-svg-core'

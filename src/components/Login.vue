@@ -55,7 +55,7 @@ export default {
     return {
       email: '',
       password: '',
-      isLoading: false,  // Added for basic loading state
+      isLoading: false,  
     };
   },
   computed: {
@@ -72,13 +72,11 @@ export default {
         console.log('Login successful, user data:', userData);
         
         if (userData) {
-          // Navigate to Beranda after successful login
           this.$router.push({ name: 'Beranda' });
         }
       } catch (error) {
         console.error('Login failed:', error);
         this.password = ''; 
-        // Display error message to user
         this.$store.commit('SET_MESSAGE', 'Login failed. Please check your credentials.');
       } finally {
         this.isLoading = false;  
