@@ -3,6 +3,7 @@
 import { createStore } from 'vuex';
 import Cookies from 'js-cookie';
 import AuthService from '../service/auth.service.js';
+import { jwtDecode } from 'jwt-decode'; 
 
 // Get user from cookies
 const userCookie = Cookies.get("user");
@@ -24,10 +25,11 @@ export default createStore({
         authCode: null,
         restaurantInfo: null,
         vehicleInfo: null,
-        // Auth state
         isLoggedIn: user ? true : false,
         user: user,
-        message: null
+        message: null,
+        displayLoader: false,  // Added missing state
+        loggedUser: null 
     },
     mutations: {
         setUserId(state, userId) {
@@ -35,12 +37,6 @@ export default createStore({
         },
         setToken(state, token) {
             state.token = token;
-        },
-        setRestaurantInfo(state, restaurantInfo) {
-            state.restaurantInfo = restaurantInfo;
-        },
-        setVehicleInfo(state, vehicleInfo) {
-            state.vehicleInfo = vehicleInfo;
         },
         setAuthCode(state, authCode) {
             state.authCode = authCode;
@@ -52,19 +48,43 @@ export default createStore({
         REGISTER_FAIL(state) {
             state.isLoggedIn = false;
         },
-        LOGIN_SUCCESS(state, payload) {
-            Cookies.set("user", JSON.stringify(payload.user), { expires: 1 / 6 });
+        DISPLAY_LOADER(state, display) {
+        state.displayLoader = display;
+        },
+        LOGIN_SUCCESS(state, user) {
+            Cookies.set("user", JSON.stringify(user), { expires: 1 / 6 }); // 4 hours
             state.isLoggedIn = true;
-            state.user = payload.user;
-            state.data = payload.data;
+            state.user = user;
         },
         LOGIN_FAIL(state) {
             state.isLoggedIn = false;
             state.user = null;
         },
+        LOGGED_USER(state, userData) { 
+            const now = new Date().getTime();
+            let expiryTime = now + (4 * 60 * 60 * 1000);  
+            if (userData.accessToken) {
+                try {
+                    const decoded = jwtDecode(userData.accessToken);
+                    expiryTime = decoded.exp * 1000; 
+                } catch (error) {
+                    console.warn('Failed to decode JWT for expiry:', error);
+                }
+            }
+            const loggedUser = {
+                ...userData.data,  // User info
+                accessToken: userData.accessToken,
+                refreshToken: userData.refreshToken,
+                expiryDate: expiryTime
+            };
+            Cookies.set('loggedUser', JSON.stringify(loggedUser), { expires: 1 / 6 });
+            state.loggedUser = loggedUser;  
+        },
         LOGOUT(state) {
+            Cookies.remove("user");
             state.isLoggedIn = false;
             state.user = null;
+            state.loggedUser = null;
         },
         SET_MESSAGE(state, message) {
             state.message = message;
@@ -86,15 +106,15 @@ export default createStore({
         updateVehicleInfo({ commit }, vehicleInfo) {
             commit('setVehicleInfo', vehicleInfo);
         },
-        updateAuthCode({ commit }, restaurantInfo) {
-            commit('setAuthCode', restaurantInfo);
+        updateAuthCode({ commit }, authCode) {
+            commit('setAuthCode', authCode);  
         },
         // Auth actions
-        register({ commit }, { email, password }) {
-            return AuthService.register(email, password).then(
-                (response) => {
+        register({ commit }, { name, email, password }) {  
+            return AuthService.register(name, email, password).then(
+                (responseData) => {  
                     commit('REGISTER_SUCCESS');
-                    commit('SET_MESSAGE', response.data.message);
+                    commit('SET_MESSAGE', responseData.message || 'Registration successful');  
                     return Promise.resolve();
                 },
                 (error) => {
@@ -102,40 +122,62 @@ export default createStore({
                         (error.response && error.response.data && error.response.data.message) ||
                         error.message ||
                         error.toString();
-                    
                     commit('REGISTER_FAIL');
                     commit('SET_MESSAGE', message);
-                    return Promise.reject();
+                    return Promise.reject(error);  
                 }
             );
         },
-        login({ commit }, { email, password }) {
+    login({ commit }, { email, password }) {
             return AuthService.login(email, password).then(
-                (data) => {
-                    const userRole = data.data.role[0];
+                (userData) => { 
+                    console.log('API User Data:', userData);  
                     
-                    if (userRole === "admin") {
-                        commit('LOGIN_FAIL');
-                        return Promise.reject();
-                    } else if (userRole === "user") {
-                        commit('LOGIN_SUCCESS', { user: "user", data: data });
+                    if (!userData || !userData.data) {  
+                        throw new Error('Invalid user data received from API');
                     }
                     
-                    sessionStorage.setItem("user", JSON.stringify(data));
-                    Cookies.set("user", JSON.stringify(data));
-                    const currentTime = new Date().getTime();
-                    sessionStorage.setItem("loginTime", currentTime);
-                    return Promise.resolve();
+                    const user = userData;  
+                    const role = user.data.role; 
+                    const userRole = typeof role === 'string' ? role : (Array.isArray(role) ? role[0] : null); 
+
+                    if (userRole === "superadmin") {  
+                        commit('LOGIN_SUCCESS', user.data); 
+                        commit('setToken', user.accessToken); 
+                        sessionStorage.setItem("user", JSON.stringify(user.data));  
+                        const currentTime = new Date().getTime();
+                        sessionStorage.setItem("loginTime", currentTime);
+                        return Promise.resolve(user.data);
+                    } else if (userRole === "user") {
+                        commit('LOGIN_SUCCESS', user.data); 
+                        commit('setToken', user.accessToken); 
+                        sessionStorage.setItem("user", JSON.stringify(user.data));  
+                        const currentTime = new Date().getTime();
+                        sessionStorage.setItem("loginTime", currentTime);
+                        return Promise.resolve(user.data);
+                    } else {
+                        commit('LOGIN_FAIL');
+                        commit('SET_MESSAGE', 'Unknown or unsupported user role.');
+                        return Promise.reject('Unknown user role.');
+                    }
                 },
-                (error) => {
-                    commit('LOGIN_FAIL');
-                    return Promise.reject();
-                }
-            );
-        },
+            (error) => {
+                const message =
+                    (error.response && error.response.data && error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                commit('LOGIN_FAIL');
+                commit('SET_MESSAGE', message);
+                console.error('Login error:', error);  // Existing logging
+                return Promise.reject(error);
+            }
+        );
+    },
         logout({ commit }) {
             AuthService.logout();
             commit('LOGOUT');
+            sessionStorage.removeItem("user");
+            sessionStorage.removeItem("loginTime");
         }
     },
     getters: {
@@ -144,7 +186,6 @@ export default createStore({
         getRestaurantInfo: state => state.restaurantInfo,
         getVehicleInfo: state => state.vehicleInfo,
         getAuthCode: state => state.authCode,
-        // Auth getters
         isLoggedIn: state => state.isLoggedIn,
         currentUser: state => state.user,
         message: state => state.message

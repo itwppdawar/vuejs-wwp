@@ -1,12 +1,9 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 
-// const API_URL = "https://dpkp-lumajang.ghani.my.id/api/";
-// const API_URL = "http://127.0.0.1:8000/api/";
-// const API_URL = "https://dpkp-backend-lumajang.jh-beon.cloud/api/";
-// const API_URL = "https://trial-dpkp-lumajang.polinema.web.id/api/";
-const API_URL = import.meta.env.VITE_URL_API;
 
+const API_URL = process.env.VITE_URL_API || "http://192.168.23.23/:3000"
+console.log('API_URL :', API_URL)
 
 const salesOrder = () => {
   const url = `${API_URL}sales-order`;

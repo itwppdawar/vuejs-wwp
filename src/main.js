@@ -9,6 +9,12 @@ import * as BootstrapVueNext from 'bootstrap-vue-next'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
 
+// Import Font Awesome for admin icons
+import '@fortawesome/fontawesome-free/css/all.min.css'
+
+// Import AdminKit styles
+import './style/adminkit.css'
+
 /* import the fontawesome core */
 import {library} from '@fortawesome/fontawesome-svg-core'
 
