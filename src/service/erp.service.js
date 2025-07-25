@@ -1,8 +1,8 @@
 import axios from "axios";
-import authHeader from "./auth-header";
+import authHeader from "./auth.header";
 
 
-const API_URL = process.env.VITE_URL_API || "http://192.168.23.23/:3000"
+const API_URL = process.env.VITE_URL_API || "http://192.168.23.23/:3000/"
 console.log('API_URL :', API_URL)
 
 const salesOrder = () => {
@@ -10,25 +10,25 @@ const salesOrder = () => {
   return axios.get(url, { headers: authHeader() });
 };
 
-const salesReport = () => {
-  const url = `${API_URL}sales-report`;
+const invoice = () => {
+  const url = `${API_URL}invoice`;
   return axios.get(url, { headers: authHeader() });
 };
 
-const salesRequest = () => {
-  const url = `${API_URL}sales-request`;
+const request = () => {
+  const url = `${API_URL}request`;
   return axios.get(url, { headers: authHeader() });
 };
 
 const salesQuotation = () => {
-  const url = `${API_URL}sales-quotation`;
+  const url = `${API_URL}sales-qoutation`;
   return axios.get(url, { headers: authHeader() });
 };
 
 
 export default {
   salesOrder,
-  salesReport,
-  salesRequest,
+  invoice,
+  request,
   salesQuotation
 };

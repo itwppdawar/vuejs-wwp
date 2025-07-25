@@ -1,14 +1,37 @@
-export default [
+import RequestOrder from '../components/request-order/index.vue'
+import SalesReport from '../components/sales-report/index.vue'
+import SalesOrder from '../components/sales-order/index.vue'
+import SalesQuotation from '../components/sales-quotation/index.vue'
+import Beranda from '../components/Beranda.vue'
+export default [ 
     {
-        path: '/dashboard',
-        name: 'admin.dashboard',
-        component: () => import('../components/Dashboard.vue'),
-        meta: { requiresAuth: true, roles: ['admin', 'user'] }
+            path: '/beranda',
+            name: 'Beranda',
+            component: Beranda,
+            meta: { requiresAuth: true, roles: ['user','superadmin'] }
     },
     {
-        path: '/admin/page-example',
-        name: 'admin.page.example',
-        component: () => import('../components/Dashboard.vue'), // Temporarily using Dashboard component
-        meta: { requiresAuth: true, roles: ['admin', 'user'] }
+            path: '/sales-order',
+            name: 'SalesOrder',
+            component: SalesOrder,
+            meta: { requiresAuth: true, roles: ['user','superadmin'] }
+    },
+    {
+            path: '/sales-quotation',
+            name: 'SalesQuotation',
+            component: SalesQuotation,
+            meta: { requiresAuth: true, roles: ['user','superadmin'] }
+    },
+    {
+            path: '/sales-report',
+            name: 'SalesReport',
+            component: SalesReport,
+            meta: { requiresAuth: true, roles: ['user','superadmin'] }
+    },
+    {
+            path: '/request-order',
+            name: 'RequestOrder',
+            component: RequestOrder,
+            meta: { requiresAuth: true, roles: ['user','superadmin'] }
     },
 ];

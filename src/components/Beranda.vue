@@ -297,5 +297,13 @@ export default {
   }
 };
 </script>
-
+<style scoped>
+   .rounded-circle {
+    height: 45px;
+    width: 45px;
+    text-align: center;
+    align-content: center;
+    border-radius: 50% !important;
+}
+</style>
 
