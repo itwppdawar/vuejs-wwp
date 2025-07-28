@@ -20,6 +20,7 @@ const login = (email, password) => {
       password,
     }, { withCredentials: true })
     .then((response) => {
+      Cookies.set("token", response.data.accessToken);
       return response.data;
     })
     .catch((error) => {
@@ -29,11 +30,9 @@ const login = (email, password) => {
 };
 
 const logout = () => {
-  // First, clear local session/cookies
   Cookies.remove("user");
-  Cookies.remove("superadmin");
   Cookies.remove("loginTime");
-  // Then, notify the backend
+  Cookies.remove("token");
   return axios.post(API_URL + "api/v1/user/logout", {}, { headers: authHeader() });
 };
 

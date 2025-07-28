@@ -169,12 +169,12 @@ export default {
   methods: {
     ...mapActions(['logout']),
     
-    async fetchRequestOrders() {
+    async fetchSalesOrders() {
       try {
         this.loading = true;
         this.error = null;
         
-        const response = await ErpService.request();
+        const response = await ErpService.salesOrder();
         console.log('API Response:', response.data);
         
         // Handle different response structures
@@ -208,7 +208,7 @@ export default {
           } else {
             this.error = `Server error: ${error.response.data?.message || error.response.statusText}`;
           }
-        } else if (error.salesOrder) {
+        } else if (error.request) {
           this.error = 'Network error. Please check your connection and try again.';
         }
       } finally {
@@ -251,7 +251,7 @@ export default {
             text: 'sales order deleted successfully',
             type: 'success'
           });
-          this.fetchsalesOrders(); 
+          this.fetchSalesOrders(); 
         } catch (error) {
           console.error('Error deleting sales order:', error);
           this.$notify({
@@ -289,7 +289,7 @@ export default {
   },
   
   async mounted() {
-    await this.fetchRequestOrders();
+    await this.fetchSalesOrders();
     this.setupTableEvents();
   },
   

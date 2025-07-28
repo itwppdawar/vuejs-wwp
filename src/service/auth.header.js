@@ -2,24 +2,18 @@ import Cookies from "js-cookie";
 
 export default function authHeader() {
   try {
-    // Ambil token dari sessionStorage
-    const token = sessionStorage.getItem("user");
+    // Ambil token dari cookie
+    const token = Cookies.get("token");
     if (!token) {
-      console.error("Token not found in sessionStorage");
+      console.error("Token not found in cookie");
       return {};
     }
 
-    // Parse token ke dalam bentuk objek JSON
-    const user = JSON.parse(token);
-    if (user && user.data && user.data.token) {
-      // Mengembalikan header otorisasi yang valid
-      return { Authorization: "Bearer " + user.data.token };
-    } else {
-      console.error("Invalid user data or token not found in user object");
-      return {};
-    }
+    // Token sudah dalam bentuk access token, tidak perlu di-parse sebagai JSON
+    // Mengembalikan header otorisasi yang valid
+    return { Authorization: "Bearer " + token };
   } catch (error) {
-    console.error("Failed to parse token. Error:", error);
+    console.error("Failed to get token. Error:", error);
     return {};
   }
 }

@@ -2,7 +2,7 @@ import axios from "axios";
 import authHeader from "./auth.header";
 
 
-const API_URL = process.env.VITE_URL_API || "http://192.168.23.23/:3000/"
+const API_URL = process.env.VITE_URL_API || "http://192.168.23.23:3000/api/v1/"
 console.log('API_URL :', API_URL)
 
 const salesOrder = () => {
