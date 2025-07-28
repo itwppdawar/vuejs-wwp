@@ -8,30 +8,35 @@ export default [
             path: '/beranda',
             name: 'Beranda',
             component: Beranda,
+            nameRoute: 'Dashboard',
             meta: { requiresAuth: true, roles: ['user','superadmin'] }
     },
     {
             path: '/sales-order',
             name: 'SalesOrder',
             component: SalesOrder,
+            nameRoute: 'Sales Order',
             meta: { requiresAuth: true, roles: ['user','superadmin'] }
     },
     {
             path: '/sales-quotation',
             name: 'SalesQuotation',
             component: SalesQuotation,
+            nameRoute: 'Sales Quotation',
             meta: { requiresAuth: true, roles: ['user','superadmin'] }
     },
     {
             path: '/sales-report',
             name: 'SalesReport',
             component: SalesReport,
+            nameRoute: 'Sales Report',
             meta: { requiresAuth: true, roles: ['user','superadmin'] }
     },
     {
             path: '/request-order',
             name: 'RequestOrder',
             component: RequestOrder,
+            nameRoute: 'Request Order',
             meta: { requiresAuth: true, roles: ['user','superadmin'] }
     },
 ];

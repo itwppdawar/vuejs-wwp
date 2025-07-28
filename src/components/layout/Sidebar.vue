@@ -27,7 +27,7 @@
                 <i class="align-middle" data-feather="bell"></i> <span class="align-middle">Notifikasi</span>
               </router-link>
             </li>
-            <li class="sidebar-item" :class="{ active: $route.name === 'Beranda' }">
+            <li class="sidebar-item" :class="{ active: $route.name === 'Beranda' || $route.nameRoute === 'Dashboard' }">
               <router-link class="sidebar-link" to="/beranda">
                 <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
               </router-link>
@@ -41,22 +41,22 @@
                 <i class="align-middle submenu-arrow" :data-feather="masterDataOpen ? 'chevron-down' : 'chevron-right'"></i>
               </a>
               <ul class="sidebar-submenu" :class="{ show: masterDataOpen }">
-                <li class="sidebar-item" :class="{ active: $route.name === 'SalesOrder' }">
+                <li class="sidebar-item" :class="{ active: $route.name === 'SalesOrder' || $route.nameRoute === 'Sales Order' }">
                   <router-link class="sidebar-link" to="/sales-order">
                     <i class="align-middle" data-feather="square"></i> <span class="align-middle">Sales Order</span>
                   </router-link>
                 </li>
-                <li class="sidebar-item" :class="{ active: $route.name === 'SalesQuotation' }">
+                <li class="sidebar-item" :class="{ active: $route.name === 'SalesQuotation' || $route.nameRoute === 'Sales Quotation' }">
                   <router-link class="sidebar-link" to="/sales-quotation">
                     <i class="align-middle" data-feather="check-square"></i> <span class="align-middle">Sales Quotation</span>
                   </router-link>
                 </li>
-                <li class="sidebar-item" :class="{ active: $route.name === 'RequestOrder' }">
+                <li class="sidebar-item" :class="{ active: $route.name === 'RequestOrder' || $route.nameRoute === 'Request Order' }">
                   <router-link class="sidebar-link" to="/request-order">
-                    <i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Request Order</span>
+                    <i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Request Order</span> 
                   </router-link>
                 </li>
-                <li class="sidebar-item" :class="{ active: $route.name === 'SalesReport' }">
+                <li class="sidebar-item" :class="{ active: $route.name === 'SalesReport' || $route.nameRoute === 'Sales Report' }">
                   <router-link class="sidebar-link" to="/sales-report">
                     <i class="align-middle" data-feather="map"></i> <span class="align-middle">Sales Report</span>
                   </router-link>

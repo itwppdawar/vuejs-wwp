@@ -1,13 +1,57 @@
 <template>
   <DashboardLayout>
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">Sales Order</h1>
-      <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-          <router-link to="/sales-order/create" class="btn btn-sm btn-primary">
-            <i class="fas fa-plus"></i> Add New Sales Order
-          </router-link>
+    <div class="row align-items-center mb-3">
+      <div class="col-auto">
+        <span class="h4">Filter Status : </span>
+      </div>
+      <div class="col-auto">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-success">Aktif</button>
+          <span>|</span>
+          <button class="btn btn-sm btn-outline-danger">Non Aktif</button>
         </div>
+      </div>
+      <div class="col-auto ms-auto">
+        <router-link to="/sales-order/create" class="btn btn-sm btn-outline-primary">
+          <i class="fas fa-plus"></i> Add New Sales Order
+        </router-link>
+      </div>
+    </div>
+    <!-- filter action -->
+    <div class="row align-items-center mb-3">
+      <div class="col-auto">
+        <div class="search-button">
+          <div class="search-container">
+            <i class="align-middle search-icon fas fa-search"></i>
+            <input type="text" class="search-input" placeholder="(Ctrl + f)">
+          </div>
+        </div>
+      </div>
+      <div class="col-auto">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-danger" @click="bulkDelete" :disabled="selectedRows.length === 0">
+            <i class="fas fa-trash"></i>
+          </button>
+          <button class="btn btn-sm btn-success" @click="bulkView" :disabled="selectedRows.length === 0">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="btn btn-sm btn-primary" @click="bulkEdit" :disabled="selectedRows.length === 0">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-secondary" @click="bulkPrint" :disabled="selectedRows.length === 0">
+            <i class="fas fa-print"></i>
+          </button>
+        </div>
+      </div>
+      <div class="d-flex col-auto ms-auto gap-2">
+        <a href="#" class="text-decoration-none text-secondary"><i class="fas fa-file-csv fa-xl mt-3"></i> </a>
+        <a href="#" class="btn btn-sm btn-outline-secondary"><i class="fas fa-refresh"></i> </a>
+        <select class="form-select form-select-sm" v-model="itemsPerPage">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
       </div>
     </div>
 
@@ -25,32 +69,94 @@
 
     <!-- Data Table -->
     <div v-if="!loading && !error" class="card">
-      <div class="card-header">
-        <h5 class="card-title mb-0">Sales Orders List</h5>
-      </div>
       <div class="card-body">
-        <DataTable
-          :data="salesOrders"
-          :columns="columns"
-          :options="tableOptions"
-          class="table table-striped table-hover"
-          ref="dataTable"
-        />
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" v-model="allSelected" @change="toggleSelectAll">
+                </div>
+              </th>
+              <th scope="col" @click="sortBy('id')" :class="{ 'text-primary': sortColumn === 'id' }">
+                ID
+                <i class="fas" :class="getSortIcon('id')"></i>
+              </th>
+              <th scope="col" @click="sortBy('request_number')" :class="{ 'text-primary': sortColumn === 'request_number' }">
+                Request Number
+                <i class="fas" :class="getSortIcon('request_number')"></i>
+              </th>
+              <th scope="col" @click="sortBy('customer_name')" :class="{ 'text-primary': sortColumn === 'customer_name' }">
+                Customer
+                <i class="fas" :class="getSortIcon('customer_name')"></i>
+              </th>
+              <th scope="col" @click="sortBy('status')" :class="{ 'text-primary': sortColumn === 'status' }">
+                Status
+                <i class="fas" :class="getSortIcon('status')"></i>
+              </th>
+              <th scope="col" @click="sortBy('total_amount')" :class="{ 'text-primary': sortColumn === 'total_amount' }">
+                Total Amount
+                <i class="fas" :class="getSortIcon('total_amount')"></i>
+              </th>
+              <th scope="col" @click="sortBy('request_date')" :class="{ 'text-primary': sortColumn === 'request_date' }">
+                Request Date
+                <i class="fas" :class="getSortIcon('request_date')"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="order in paginatedOrders" :key="order.id">
+              <td>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" :value="order.id" v-model="selectedRows">
+                </div>
+              </td>
+              <td>{{ order.id }}</td>
+              <td>{{ order.request_number || 'N/A' }}</td>
+              <td>{{ order.customer_name || order.customer || 'N/A' }}</td>
+              <td>
+                <span class="badge" :class="getStatusClass(order.status)">
+                  {{ order.status || 'Pending' }}
+                </span>
+              </td>
+              <td>{{ formatCurrency(order.total_amount) }}</td>
+              <td>{{ order.request_date ? new Date(order.request_date).toLocaleDateString('id-ID') : (order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID') : 'N/A') }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-between col-auto ms-auto align-items-center">
+          <div>
+            Showing {{ startItem }} to {{ endItem }} of {{ filteredOrders.length }} entries
+          </div>
+          <nav aria-label="Page navigation" style="margin: inherit;">
+          <ul class="pagination">
+            <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+              <a class="page-link" href="#" @click.prevent="currentPage = 1">First</a>
+            </li>
+            <li class="page-item" :class="{ 'disabled': currentPage === 1 }">
+              <a class="page-link" href="#" @click.prevent="currentPage--">Previous</a>
+            </li>
+            <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ 'active': currentPage === page }">
+              <a class="page-link" href="#" @click.prevent="currentPage = page">{{ page }}</a>
+            </li>
+            <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
+              <a class="page-link" href="#" @click.prevent="currentPage++">Next</a>
+            </li>
+            <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
+              <a class="page-link" href="#" @click.prevent="currentPage = totalPages">Last</a>
+            </li>
+          </ul>
+        </nav>
+          <div>
+            
+          </div>
+        </div>
       </div>
     </div>
   </DashboardLayout>
 </template>
 
 <script>
-import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net-dt';
-import 'datatables.net-select-dt';
-import 'datatables.net-responsive-dt';
-import 'datatables.net-buttons-dt';
-import 'datatables.net-buttons/js/buttons.html5.mjs';
-import 'datatables.net-buttons/js/buttons.print.mjs';
-DataTable.use(DataTablesCore);
-
 import { mapGetters, mapActions } from 'vuex';
 import DashboardLayout from '../layout/DashboardLayout.vue';
 import ErpService from '../../service/erp.service';
@@ -58,113 +164,114 @@ import ErpService from '../../service/erp.service';
 export default {
   name: 'RequestOrderIndex',
   components: {
-    DashboardLayout,
-    DataTable
+    DashboardLayout
   },
   data() {
     return {
       salesOrders: [],
       loading: true,
       error: null,
-      columns: [
-        {
-          title: 'ID',
-          data: 'id',
-          width: '80px'
-        },
-        {
-          title: 'Request Number',
-          data: 'request_number',
-          render: function(data, type, row) {
-            return data || 'N/A';
-          }
-        },
-        {
-          title: 'Customer',
-          data: 'customer_name',
-          render: function(data, type, row) {
-            return data || row.customer || 'N/A';
-          }
-        },
-        {
-          title: 'Status',
-          data: 'status',
-          render: function(data, type, row) {
-            const statusClass = this.getStatusClass(data);
-            return `<span class="badge ${statusClass}">${data || 'Pending'}</span>`;
-          }.bind(this)
-        },
-        {
-          title: 'Total Amount',
-          data: 'total_amount',
-          render: function(data, type, row) {
-            if (data) {
-              return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-              }).format(data);
-            }
-            return 'N/A';
-          }
-        },
-        {
-          title: 'Request Date',
-          data: 'request_date',
-          render: function(data, type, row) {
-            if (data) {
-              return new Date(data).toLocaleDateString('id-ID');
-            }
-            return row.created_at ? new Date(row.created_at).toLocaleDateString('id-ID') : 'N/A';
-          }
-        },
-        {
-          title: 'Actions',
-          data: null,
-          orderable: false,
-          render: function(data, type, row) {
-            return `
-              <div class="btn-group btn-group-sm" role="group">
-                <button class="btn btn-outline-primary btn-sm view-btn" data-id="${row.id}" title="View">
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn btn-outline-secondary btn-sm edit-btn" data-id="${row.id}" title="Edit">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-outline-danger btn-sm delete-btn" data-id="${row.id}" title="Delete">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            `;
-          }
-        }
-      ],
-      tableOptions: {
-        responsive: true,
-        pageLength: 25,
-        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-        order: [[0, 'desc']],
-        language: {
-          search: "Search orders:",
-          lengthMenu: "Show _MENU_ entries",
-          info: "Showing _START_ to _END_ of _TOTAL_ entries",
-          paginate: {
-            first: "First",
-            last: "Last",
-            next: "Next",
-            previous: "Previous"
-          },
-          emptyTable: "No Sales orders found",
-          zeroRecords: "No matching records found"
-        },
-        dom: 'Bfrtip',
-        buttons: [
-          'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
-      }
+      exportOption: '',
+      filters: {
+        request_number: '',
+        customer_name: '',
+        status: ''
+      },
+      selectedRows: [],
+      itemsPerPage: 10,
+      currentPage: 1,
+      sortColumn: '',
+      sortAscending: true
     };
   },
   computed: {
-    ...mapGetters(['isLoggedIn', 'currentUser'])
+    ...mapGetters(['isLoggedIn', 'currentUser']),
+    uniqueCustomers() {
+      return [...new Set(this.salesOrders.map(order => order.customer_name || order.customer).filter(Boolean))];
+    },
+    uniqueStatuses() {
+      return [...new Set(this.salesOrders.map(order => order.status).filter(Boolean))];
+    },
+    filteredOrders() {
+      let filtered = this.salesOrders.filter(order => {
+        return (
+          (this.filters.request_number === '' || (order.request_number && order.request_number.toLowerCase().includes(this.filters.request_number.toLowerCase()))) &&
+          (this.filters.customer_name === '' || (order.customer_name || order.customer) === this.filters.customer_name) &&
+          (this.filters.status === '' || order.status === this.filters.status)
+        );
+      });
+
+      // Apply sorting
+      if (this.sortColumn) {
+        filtered.sort((a, b) => {
+          let aVal = a[this.sortColumn] || '';
+          let bVal = b[this.sortColumn] || '';
+          
+          if (typeof aVal === 'string') {
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
+          }
+          
+          if (aVal < bVal) return this.sortAscending ? -1 : 1;
+          if (aVal > bVal) return this.sortAscending ? 1 : -1;
+          return 0;
+        });
+      }
+
+      return filtered;
+    },
+    paginatedOrders() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + parseInt(this.itemsPerPage);
+      return this.filteredOrders.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredOrders.length / this.itemsPerPage);
+    },
+    visiblePages() {
+      const pages = [];
+      const total = this.totalPages;
+      const current = this.currentPage;
+      
+      if (total <= 7) {
+        for (let i = 1; i <= total; i++) {
+          pages.push(i);
+        }
+      } else {
+        if (current <= 4) {
+          for (let i = 1; i <= 5; i++) {
+            pages.push(i);
+          }
+          pages.push('...');
+          pages.push(total);
+        } else if (current >= total - 3) {
+          pages.push(1);
+          pages.push('...');
+          for (let i = total - 4; i <= total; i++) {
+            pages.push(i);
+          }
+        } else {
+          pages.push(1);
+          pages.push('...');
+          for (let i = current - 1; i <= current + 1; i++) {
+            pages.push(i);
+          }
+          pages.push('...');
+          pages.push(total);
+        }
+      }
+      
+      return pages;
+    },
+    startItem() {
+      return this.filteredOrders.length === 0 ? 0 : (this.currentPage - 1) * this.itemsPerPage + 1;
+    },
+    endItem() {
+      return Math.min(this.currentPage * this.itemsPerPage, this.filteredOrders.length);
+    },
+    allSelected() {
+      return this.paginatedOrders.length > 0 && this.selectedRows.length === this.paginatedOrders.length;
+    }
   },
   methods: {
     ...mapActions(['logout']),
@@ -175,41 +282,36 @@ export default {
         this.error = null;
         
         const response = await ErpService.salesOrder();
-        console.log('API Response:', response.data);
+        console.log('Sales Orders Response:', response);
         
-        // Handle different response structures
-        if (response.data) {
+        if (response && response.data) {
           if (Array.isArray(response.data)) {
             this.salesOrders = response.data;
           } else if (response.data.data && Array.isArray(response.data.data)) {
             this.salesOrders = response.data.data;
-          } else if (response.data.result && Array.isArray(response.data.result)) {
-            this.salesOrders = response.data.result;
           } else {
-            this.salesOrders = [];
             console.warn('Unexpected response structure:', response.data);
+            this.salesOrders = [];
           }
         } else {
           this.salesOrders = [];
         }
         
-        console.log('Processed sales orders:', this.salesOrders);
+        console.log('Processed Sales Orders:', this.salesOrders);
         
       } catch (error) {
         console.error('Error fetching sales orders:', error);
-        this.error = 'Failed to load sales orders. Please try again later.';
+        this.error = 'Failed to load sales orders. Please try again.';
+        this.salesOrders = [];
         
-        if (error.response) {
-          if (error.response.status === 401) {
-            this.error = 'Authentication failed. Please login again.';
-            this.$router.push({ name: 'Login' });
-          } else if (error.response.status === 403) {
-            this.error = 'Access denied. You do not have permission to view this data.';
-          } else {
-            this.error = `Server error: ${error.response.data?.message || error.response.statusText}`;
-          }
-        } else if (error.request) {
-          this.error = 'Network error. Please check your connection and try again.';
+        if (error.response?.status === 401) {
+          this.$notify({
+            title: 'Session Expired',
+            text: 'Please login again',
+            type: 'warning'
+          });
+          this.logout();
+          this.$router.push('/login');
         }
       } finally {
         this.loading = false;
@@ -234,6 +336,50 @@ export default {
       }
     },
     
+    getSortIcon(column) {
+      if (this.sortColumn === column) {
+        return this.sortAscending ? 'fa-sort-up' : 'fa-sort-down';
+      }
+      return 'fa-sort';
+    },
+    
+    sortBy(column) {
+      if (this.sortColumn === column) {
+        this.sortAscending = !this.sortAscending;
+      } else {
+        this.sortColumn = column;
+        this.sortAscending = true;
+      }
+    },
+    
+    toggleSelectAll() {
+      if (this.allSelected) {
+        this.selectedRows = [];
+      } else {
+        this.selectedRows = this.paginatedOrders.map(order => order.id);
+      }
+    },
+    
+    applyFilters() {
+      this.currentPage = 1;
+    },
+    
+    exportData() {
+      // Implement export logic here
+      console.log('Export option:', this.exportOption);
+      console.log('Selected rows:', this.selectedRows);
+    },
+    
+    formatCurrency(amount) {
+      if (amount) {
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR'
+        }).format(amount);
+      }
+      return 'N/A';
+    },
+    
     handleView(id) {
       this.$router.push({ name: 'SalesOrderView', params: { id } });
     },
@@ -248,7 +394,7 @@ export default {
           console.log('Delete sales order:', id);
           this.$notify({
             title: 'Success',
-            text: 'sales order deleted successfully',
+            text: 'Sales order deleted successfully',
             type: 'success'
           });
           this.fetchSalesOrders(); 
@@ -263,43 +409,87 @@ export default {
       }
     },
     
-    setupTableEvents() {
-      this.$nextTick(() => {
-        if (this.$refs.dataTable && this.$refs.dataTable.dt) {
-          const table = this.$refs.dataTable.dt;
-          
-          // Handle action button clicks
-          table.on('click', '.view-btn', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            this.handleView(id);
+    async bulkDelete() {
+      if (confirm(`Are you sure you want to delete ${this.selectedRows.length} sales orders?`)) {
+        try {
+          console.log('Bulk delete sales orders:', this.selectedRows);
+          this.$notify({
+            title: 'Success',
+            text: 'Sales orders deleted successfully',
+            type: 'success'
           });
-          
-          table.on('click', '.edit-btn', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            this.handleEdit(id);
+          this.fetchSalesOrders(); 
+        } catch (error) {
+          console.error('Error deleting sales orders:', error);
+          this.$notify({
+            title: 'Error',
+            text: 'Failed to delete sales orders',
+            type: 'error'
           });
-          
-          table.on('click', '.delete-btn', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            this.handleDelete(id);
-          });
+        } finally {
+          this.selectedRows = [];
         }
-      });
+      }
+    },
+    
+    bulkView() {
+      if (this.selectedRows.length > 0) {
+        this.$router.push({ name: 'SalesOrderView', params: { id: this.selectedRows[0] } });
+      }
+    },
+    
+    bulkEdit() {
+      if (this.selectedRows.length > 0) {
+        this.$router.push({ name: 'SalesOrderEdit', params: { id: this.selectedRows[0] } });
+      }
+    },
+    
+    bulkPrint() {
+      console.log('Bulk print:', this.selectedRows);
     }
   },
   
   async mounted() {
     await this.fetchSalesOrders();
-    this.setupTableEvents();
-  },
-  
-  updated() {
-    this.setupTableEvents();
   }
 };
 </script>
 
 <style scoped>
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.search-container:focus-within {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.search-icon {
+  color: #6c757d;
+  margin-right: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.search-input::placeholder {
+  color: #6c757d;
+}
 .card {
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   border: 1px solid rgba(0, 0, 0, 0.125);
